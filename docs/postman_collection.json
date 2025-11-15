@@ -7,7 +7,85 @@
   },
   "item": [
     {
-      "name": "📅 Bookings (Reservas)",
+      "name": "🏢 1. Locations (Locais) - CRIAR PRIMEIRO",
+      "item": [
+        {
+          "name": "Criar Local",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sede Principal\",\n  \"address\": \"Av. Paulista, 1000 - São Paulo, SP\",\n  \"description\": \"Escritório principal da empresa\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/api/location/add/",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "api", "location", "add", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚪 2. Rooms (Salas) - CRIAR SEGUNDO",
+      "item": [
+        {
+          "name": "Criar Sala",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sala de Reunião A\",\n  \"capacity\": 10,\n  \"description\": \"Sala equipada com projetor\",\n  \"location\": \"{{location_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/api/room/add/",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "api", "room", "add", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 3. Managers (Responsáveis) - CRIAR TERCEIRO",
+      "item": [
+        {
+          "name": "Criar Responsável",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao.silva@empresa.com\",\n  \"department\": \"TI\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/api/manager/add/",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "api", "manager", "add", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 4. Bookings (Reservas) - CRIAR POR ÚLTIMO",
       "item": [
         {
           "name": "Listar todas as reservas",
@@ -273,19 +351,24 @@
       "description": "Base URL da API"
     },
     {
+      "key": "location_id",
+      "value": "",
+      "description": "ID do local (copiar da resposta de criar local)"
+    },
+    {
       "key": "room_id",
       "value": "",
-      "description": "ID da sala (substitua por um ID real)"
+      "description": "ID da sala (copiar da resposta de criar sala)"
     },
     {
       "key": "manager_id",
       "value": "",
-      "description": "ID do responsável (substitua por um ID real)"
+      "description": "ID do responsável (copiar da resposta de criar responsável)"
     },
     {
       "key": "booking_id",
       "value": "",
-      "description": "ID da reserva (substitua por um ID real)"
+      "description": "ID da reserva (copiar da resposta de criar reserva)"
     }
   ]
 }
