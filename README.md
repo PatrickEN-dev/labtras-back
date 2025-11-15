@@ -1,171 +1,252 @@
-# Sistema de Reservas de Salas
+# 🏢 Sistema de Reservas de Salas - Back-end
 
-Sistema para gerenciar reservas de salas em diferentes locais/prédios.
+Sistema back-end em **Django + Django REST Framework** para gerenciar reservas de salas em diferentes locais/prédios, seguindo arquitetura limpa inspirada em **DDD + CQRS**.
 
-## 📊 Estrutura do Banco de Dados
+## 📋 Pré-requisitos
 
-### Models / Tabelas
+- **Python 3.8+**
+- **pip** (gerenciador de pacotes Python)
+- **Git** (para clonar o repositório)
 
-#### 1. Local
+## 🚀 Instalação e Configuração
 
-Representa os prédios ou locais onde as salas estão.
+### 1. **Clonar o Repositório**
 
-**Campos:**
-
-- `id` (PK, int, auto-increment)
-- `nome` (string, obrigatório)
-- `endereco` (string, opcional)
-- `descricao` (string, opcional)
-- `created_at` (datetime)
-- `updated_at` (datetime)
-
-#### 2. Sala
-
-Cada sala pertence a um Local.
-
-**Campos:**
-
-- `id` (PK, int, auto-increment)
-- `nome` (string, obrigatório)
-- `capacidade` (int, opcional)
-- `local_id` (FK → Local.id)
-- `descricao` (string, opcional)
-- `created_at` (datetime)
-- `updated_at` (datetime)
-
-#### 3. Responsavel
-
-Representa a pessoa responsável pela reserva. Pode ser um usuário do sistema.
-
-**Campos:**
-
-- `id` (PK, int, auto-increment)
-- `nome` (string, obrigatório)
-- `email` (string, obrigatório, único)
-- `telefone` (string, opcional)
-- `created_at` (datetime)
-- `updated_at` (datetime)
-
-#### 4. Reserva
-
-Representa a reserva de uma sala.
-
-**Campos:**
-
-- `id` (PK, int, auto-increment)
-- `sala_id` (FK → Sala.id)
-- `responsavel_id` (FK → Responsavel.id)
-- `data_inicio` (datetime, obrigatório)
-- `data_fim` (datetime, obrigatório)
-- `opcao_cafe` (boolean, padrão false)
-- `quantidade_cafe` (int, opcional)
-- `descricao_cafe` (string, opcional)
-- `created_at` (datetime)
-- `updated_at` (datetime)
-
-## 🔗 Relações
-
-- **Um Local** tem **várias Salas** (1:N)
-- **Uma Sala** pertence a **um Local** (N:1)
-- **Uma Reserva** está ligada a **uma Sala** e a **um Responsável** (N:1)
-- **Um Responsável** pode ter **várias Reservas** (1:N)
-
-## 📈 Diagrama de Relacionamentos
-
-```
-Local (1) ←→ (N) Sala (1) ←→ (N) Reserva (N) ←→ (1) Responsavel
+```bash
+git clone https://github.com/PatrickEN-dev/labtras-back.git
+cd labtras-back
 ```
 
-## 🛠 Ferramentas para Criar Diagramas
+### 2. **Criar Ambiente Virtual**
 
-### **Gratuitas:**
+```bash
+# Windows
+python -m venv venv
 
-- **[dbdiagram.io](https://dbdiagram.io/)** - Excelente para diagramas ER, sintaxe simples
-- **[Lucidchart](https://www.lucidchart.com/)** - Versão gratuita limitada
-- **[Draw.io (app.diagrams.net)](https://app.diagrams.net/)** - Totalmente gratuito
-- **[QuickDBD](https://www.quickdatabasediagrams.com/)** - Criação rápida de diagramas
-- **[Mermaid Live Editor](https://mermaid.live/)** - Para diagramas em código
-
-### **Pagas:**
-
-- **[MySQL Workbench](https://www.mysql.com/products/workbench/)** - Gratuito para MySQL
-- **[Vertabelo](https://vertabelo.com/)** - Especializado em modelagem de dados
-- **[SqlDBM](https://sqldbm.com/)** - Modelagem visual de banco de dados
-
-### **Recomendação:**
-
-Para este projeto, recomendo o **[dbdiagram.io](https://dbdiagram.io/)** pela facilidade de uso e qualidade dos diagramas gerados.
-
-## 📝 Código DBML para dbdiagram.io
-
-```dbml
-// Use DBML to define your database structure
-// Sistema de Reservas de Salas
-// Docs: https://dbml.dbdiagram.io/docs
-
-Table locais {
-  id integer [primary key]
-  nome varchar [not null]
-  endereco varchar
-  descricao text
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table salas {
-  id integer [primary key]
-  nome varchar [not null]
-  capacidade integer
-  local_id integer [not null]
-  descricao text
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table responsaveis {
-  id integer [primary key]
-  nome varchar [not null]
-  email varchar [not null, unique]
-  telefone varchar
-  created_at timestamp
-  updated_at timestamp
-}
-
-Table reservas {
-  id integer [primary key]
-  sala_id integer [not null]
-  responsavel_id integer [not null]
-  data_inicio timestamp [not null]
-  data_fim timestamp [not null]
-  opcao_cafe boolean [default: false]
-  quantidade_cafe integer
-  descricao_cafe text [note: 'Descrição do serviço de café']
-  created_at timestamp
-  updated_at timestamp
-}
-
-// Relacionamentos
-Ref local_salas: salas.local_id > locais.id // many-to-one
-
-Ref sala_reservas: reservas.sala_id > salas.id // many-to-one
-
-Ref responsavel_reservas: reservas.responsavel_id > responsaveis.id // many-to-one
+# Linux/macOS
+python3 -m venv venv
 ```
 
-## 🚀 Como usar o dbdiagram.io
+### 3. **Ativar o Ambiente Virtual**
 
-1. Acesse [dbdiagram.io](https://dbdiagram.io/)
-2. Cole o **código DBML** acima no editor
-3. O diagrama será gerado automaticamente com os relacionamentos
-4. Você pode exportar como PNG, PDF ou SQL
+```bash
+# Windows
+venv\Scripts\activate
 
-### 📋 Instruções detalhadas:
+# Linux/macOS
+source venv/bin/activate
+```
 
-- Copie todo o bloco de código DBML (incluindo os comentários)
-- No dbdiagram.io, delete o conteúdo de exemplo e cole nosso código
-- Os relacionamentos aparecerão como linhas conectando as tabelas
-- Use as opções de exportação para salvar o diagrama
+### 4. **Instalar Dependências**
+
+```bash
+pip install -r requirements.txt
+```
+
+### 5. **Configurar Variáveis de Ambiente**
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+SECRET_KEY=sua-chave-secreta-aqui
+DEBUG=True
+DATABASE_URL=sqlite:///db.sqlite3
+```
+
+### 6. **Executar Migrações**
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 7. **Criar Superusuário (Opcional)**
+
+```bash
+python manage.py createsuperuser
+```
+
+## ▶️ Executar o Projeto
+
+### **🐳 Opção 1: Docker (Recomendado)**
+
+```bash
+# Clonar repositório
+git clone https://github.com/PatrickEN-dev/labtras-back.git
+cd labtras-back
+
+# Configurar ambiente
+cp .env.example .env
+
+# Subir containers
+docker-compose up -d
+```
+
+Servidor disponível em: **http://localhost:8000/**
+
+📖 **Guia completo Docker:** [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+
+### **🐍 Opção 2: Ambiente Local**
+
+#### **Modo Desenvolvimento**
+
+```bash
+python manage.py runserver
+```
+
+O servidor estará disponível em: **http://localhost:8000/**
+
+### **Verificar se está funcionando**
+
+Acesse: **http://localhost:8000/api/bookings/**
+
+## 🧪 Executar Testes
+
+```bash
+# Todos os testes
+python manage.py test
+
+# Apenas testes da API
+python manage.py test api.tests
+
+# Com verbose
+python manage.py test api.tests --verbosity=2
+```
+
+## 📁 Estrutura do Projeto
+
+```
+labtras-back/
+├── 📁 core/              # Configurações Django
+│   ├── settings.py       # Configurações principais
+│   ├── urls.py          # URLs principais
+│   └── wsgi.py          # WSGI application
+├── 📁 api/              # App principal
+│   ├── 📁 models/       # Modelos (Location, Room, Manager, Booking)
+│   ├── 📁 repositories/ # Camada de dados
+│   ├── 📁 services/     # Regras de negócio
+│   ├── 📁 use_cases/    # CQRS - Commands & Queries
+│   ├── 📁 serializers/  # Serializers DRF
+│   ├── 📁 views/        # Views/Controllers
+│   └── 📁 tests/        # Testes unitários
+├── 📄 manage.py         # Django CLI
+├── 📄 requirements.txt  # Dependências
+└── 📄 API_DOCS.md      # Documentação da API
+```
+
+## 🛠️ Tecnologias Utilizadas
+
+- **[Django 4.2.7](https://www.djangoproject.com/)** - Framework web
+- **[Django REST Framework 3.14.0](https://www.django-rest-framework.org/)** - API REST
+- **[PostgreSQL](https://www.postgresql.org/)** - Banco de dados (configurável)
+- **[python-decouple](https://pypi.org/project/python-decouple/)** - Gerenciamento de variáveis
+- **[django-cors-headers](https://pypi.org/project/django-cors-headers/)** - CORS para frontend
+
+## 🌐 Endpoints Principais
+
+- **`GET /api/bookings/`** - Listar reservas
+- **`POST /api/bookings/`** - Criar reserva
+- **`GET /api/bookings/{id}/`** - Buscar reserva
+- **`PUT /api/bookings/{id}/`** - Atualizar reserva
+- **`DELETE /api/bookings/{id}/`** - Excluir reserva
+
+📖 **Documentação completa da API:** [API_DOCS.md](./API_DOCS.md)
+
+## 🔧 Comandos Úteis
+
+### **Resetar Banco de Dados**
+
+```bash
+rm db.sqlite3
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### **Criar Nova Migration**
+
+```bash
+python manage.py makemigrations api
+```
+
+### **Shell Django (para testes)**
+
+```bash
+python manage.py shell
+```
+
+### **Coletar Arquivos Estáticos**
+
+```bash
+python manage.py collectstatic
+```
+
+## 📝 Banco de Dados
+
+### **SQLite (Desenvolvimento)**
+
+Configurado por padrão. O arquivo `db.sqlite3` será criado automaticamente.
+
+### **PostgreSQL (Produção)**
+
+Para usar PostgreSQL, configure a `DATABASE_URL` no `.env`:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/labtras_db
+```
+
+E instale o driver:
+
+```bash
+pip install psycopg2-binary
+```
+
+## 🐛 Solução de Problemas
+
+### **Erro de Importação do Django**
+
+```bash
+# Certifique-se que o venv está ativado
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+```
+
+### **Erro de Migration**
+
+```bash
+python manage.py makemigrations --empty api
+python manage.py migrate
+```
+
+### **Porta em Uso**
+
+```bash
+# Use outra porta
+python manage.py runserver 8080
+```
+
+## 🔒 Produção
+
+Para deploy em produção:
+
+1. Configure `DEBUG=False` no `.env`
+2. Configure `ALLOWED_HOSTS` adequadamente
+3. Use PostgreSQL ou MySQL
+4. Configure servidor web (Nginx + Gunicorn)
+5. Configure HTTPS
+
+## 👥 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`
+3. Commit: `git commit -m "Adiciona nova funcionalidade"`
+4. Push: `git push origin feature/nova-funcionalidade`
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob licença MIT. Veja o arquivo LICENSE para mais detalhes.
 
 ---
 
-_Sistema desenvolvido para gerenciar reservas de salas com facilidade e eficiência._
+**📧 Contato:** [Patrick](https://github.com/PatrickEN-dev)  
+**🔗 Repositório:** [labtras-back](https://github.com/PatrickEN-dev/labtras-back)

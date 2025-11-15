@@ -1,0 +1,291 @@
+{
+  "info": {
+    "name": "Sistema de Reservas de Salas - API",
+    "description": "Collection completa para testar a API REST do Sistema de Reservas de Salas",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "📅 Bookings (Reservas)",
+      "item": [
+        {
+          "name": "Listar todas as reservas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        },
+        {
+          "name": "Listar reservas com filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/?room_id={{room_id}}&start_date=2025-01-15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""],
+              "query": [
+                {
+                  "key": "room_id",
+                  "value": "{{room_id}}"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2025-01-15"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar nova reserva",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room\": \"{{room_id}}\",\n  \"manager\": \"{{manager_id}}\",\n  \"start_date\": \"2025-01-15T10:00:00Z\",\n  \"end_date\": \"2025-01-15T12:00:00Z\",\n  \"coffee_option\": true,\n  \"coffee_quantity\": 10,\n  \"coffee_description\": \"Café da manhã para reunião\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        },
+        {
+          "name": "Criar reserva simples (sem café)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room\": \"{{room_id}}\",\n  \"manager\": \"{{manager_id}}\",\n  \"start_date\": \"2025-01-15T14:00:00Z\",\n  \"end_date\": \"2025-01-15T16:00:00Z\",\n  \"coffee_option\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        },
+        {
+          "name": "Buscar reserva por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/{{booking_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "{{booking_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Atualizar reserva",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_date\": \"2025-01-15T15:00:00Z\",\n  \"end_date\": \"2025-01-15T17:00:00Z\",\n  \"coffee_quantity\": 15\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/{{booking_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "{{booking_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Excluir reserva",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/{{booking_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "{{booking_id}}", ""]
+            }
+          }
+        },
+        {
+          "name": "Reservas por sala",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/by_room/?room_id={{room_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "by_room", ""],
+              "query": [
+                {
+                  "key": "room_id",
+                  "value": "{{room_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reservas por responsável",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/by_manager/?manager_id={{manager_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", "by_manager", ""],
+              "query": [
+                {
+                  "key": "manager_id",
+                  "value": "{{manager_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Testes de Validação",
+      "item": [
+        {
+          "name": "Teste: Data início após data fim (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room\": \"{{room_id}}\",\n  \"manager\": \"{{manager_id}}\",\n  \"start_date\": \"2025-01-15T16:00:00Z\",\n  \"end_date\": \"2025-01-15T10:00:00Z\",\n  \"coffee_option\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        },
+        {
+          "name": "Teste: Café sem quantidade (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room\": \"{{room_id}}\",\n  \"manager\": \"{{manager_id}}\",\n  \"start_date\": \"2025-01-15T10:00:00Z\",\n  \"end_date\": \"2025-01-15T12:00:00Z\",\n  \"coffee_option\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        },
+        {
+          "name": "Teste: Conflito de horário (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room\": \"{{room_id}}\",\n  \"manager\": \"{{manager_id}}\",\n  \"start_date\": \"2025-01-15T10:30:00Z\",\n  \"end_date\": \"2025-01-15T11:30:00Z\",\n  \"coffee_option\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Endpoints Administrativos",
+      "item": [
+        {
+          "name": "Django Admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/",
+              "host": ["{{base_url}}"],
+              "path": ["admin", ""]
+            }
+          }
+        },
+        {
+          "name": "Health Check (API Root)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/",
+              "host": ["{{base_url}}"],
+              "path": ["api", ""]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "description": "Base URL da API"
+    },
+    {
+      "key": "room_id",
+      "value": "",
+      "description": "ID da sala (substitua por um ID real)"
+    },
+    {
+      "key": "manager_id",
+      "value": "",
+      "description": "ID do responsável (substitua por um ID real)"
+    },
+    {
+      "key": "booking_id",
+      "value": "",
+      "description": "ID da reserva (substitua por um ID real)"
+    }
+  ]
+}
