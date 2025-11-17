@@ -142,6 +142,28 @@ class DjangoBookingRepository(BookingRepositoryInterface):
         )
         return [self._model_to_entity(booking) for booking in queryset]
 
+    def find_conflicts(
+        self,
+        room_id: str,
+        start_date,
+        end_date,
+        exclude_booking_id: Optional[str] = None,
+    ) -> List[Booking]:
+        """Find conflicting bookings for a time period"""
+        queryset = BookingModel.objects.select_related(
+            "room", "manager", "room__location"
+        ).filter(
+            room_id=room_id,
+            start_date__lt=end_date,
+            end_date__gt=start_date,
+            deleted_at__isnull=True,
+        )
+
+        if exclude_booking_id:
+            queryset = queryset.exclude(id=exclude_booking_id)
+
+        return [self._model_to_entity(booking) for booking in queryset]
+
     def _model_to_entity(self, booking_model: BookingModel) -> Booking:
         """Convert Django model to domain entity"""
         # Import here to avoid circular imports

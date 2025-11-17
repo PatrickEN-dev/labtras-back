@@ -75,8 +75,13 @@ class RoomViewSet(viewsets.ViewSet):
         try:
             # 1. Extract filters from query parameters
             filters = {}
-            if request.query_params.get("location"):
-                filters["location_id"] = request.query_params.get("location")
+
+            if request.query_params.get("location") or request.query_params.get(
+                "location_id"
+            ):
+                filters["location_id"] = request.query_params.get(
+                    "location"
+                ) or request.query_params.get("location_id")
             if request.query_params.get("name"):
                 filters["name"] = request.query_params.get("name")
             if request.query_params.get("capacity_min"):

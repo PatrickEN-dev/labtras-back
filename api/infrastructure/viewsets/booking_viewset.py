@@ -67,14 +67,35 @@ class BookingViewSet(viewsets.ViewSet):
         try:
 
             filters = {}
-            if request.query_params.get("room"):
-                filters["room_id"] = request.query_params.get("room")
-            if request.query_params.get("manager"):
-                filters["manager_id"] = request.query_params.get("manager")
-            if request.query_params.get("start_date_from"):
-                filters["start_date_from"] = request.query_params.get("start_date_from")
-            if request.query_params.get("start_date_to"):
-                filters["start_date_to"] = request.query_params.get("start_date_to")
+            # Aceitar tanto 'room' quanto 'room_id' para compatibilidade
+            if request.query_params.get("room") or request.query_params.get("room_id"):
+                filters["room_id"] = request.query_params.get(
+                    "room"
+                ) or request.query_params.get("room_id")
+
+            # Aceitar tanto 'manager' quanto 'manager_id' para compatibilidade
+            if request.query_params.get("manager") or request.query_params.get(
+                "manager_id"
+            ):
+                filters["manager_id"] = request.query_params.get(
+                    "manager"
+                ) or request.query_params.get("manager_id")
+
+            # Aceitar diferentes formatos de datas
+            if request.query_params.get("start_date_from") or request.query_params.get(
+                "start_date"
+            ):
+                filters["start_date_from"] = request.query_params.get(
+                    "start_date_from"
+                ) or request.query_params.get("start_date")
+
+            if request.query_params.get("start_date_to") or request.query_params.get(
+                "end_date"
+            ):
+                filters["start_date_to"] = request.query_params.get(
+                    "start_date_to"
+                ) or request.query_params.get("end_date")
+
             if request.query_params.get("coffee_option"):
                 filters["coffee_option"] = (
                     request.query_params.get("coffee_option").lower() == "true"

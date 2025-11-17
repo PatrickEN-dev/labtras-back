@@ -70,6 +70,9 @@ class ManagerViewSet(viewsets.ViewSet):
             if request.query_params.get("email"):
                 filters["email"] = request.query_params.get("email")
 
+            if request.query_params.get("search"):
+                filters["search"] = request.query_params.get("search")
+
             managers = self.list_use_case.execute(filters if filters else None)
 
             output_dtos = [ManagerOutputDTO(manager) for manager in managers]

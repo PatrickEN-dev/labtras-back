@@ -42,17 +42,14 @@ class LocationViewSet(viewsets.ViewSet):
     def create(self, request):
         """Create a new location"""
         try:
-            # 1. Validate input using DTO
             input_dto = LocationInputDTO(request.data)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2. Execute use case
             location = self.create_use_case.execute(input_dto.validated_data)
 
-            # 3. Return response using DTO
             output_dto = LocationOutputDTO(location)
             return Response(output_dto.to_dict(), status=status.HTTP_201_CREATED)
 
@@ -67,17 +64,18 @@ class LocationViewSet(viewsets.ViewSet):
     def list(self, request):
         """List all locations"""
         try:
-            # 1. Extract filters from query parameters
+
             filters = {}
             if request.query_params.get("name"):
                 filters["name"] = request.query_params.get("name")
             if request.query_params.get("address"):
                 filters["address"] = request.query_params.get("address")
 
-            # 2. Execute use case
+            if request.query_params.get("search"):
+                filters["search"] = request.query_params.get("search")
+
             locations = self.list_use_case.execute(filters if filters else None)
 
-            # 3. Return response using DTOs
             output_dtos = [LocationOutputDTO(location) for location in locations]
             return Response(
                 [dto.to_dict() for dto in output_dtos], status=status.HTTP_200_OK
@@ -92,7 +90,6 @@ class LocationViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         """Get a specific location"""
         try:
-            # 1. Execute use case
             location = self.get_use_case.execute(pk)
 
             if not location:
@@ -113,17 +110,14 @@ class LocationViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
         """Update a location"""
         try:
-            # 1. Validate input using DTO
             input_dto = LocationInputDTO(request.data, partial=True)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2. Execute use case
             location = self.update_use_case.execute(pk, input_dto.validated_data)
 
-            # 3. Return response using DTO
             output_dto = LocationOutputDTO(location)
             return Response(output_dto.to_dict(), status=status.HTTP_200_OK)
 
@@ -142,7 +136,6 @@ class LocationViewSet(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         """Delete a location"""
         try:
-            # 1. Execute use case
             success = self.delete_use_case.execute(pk)
 
             if success:
