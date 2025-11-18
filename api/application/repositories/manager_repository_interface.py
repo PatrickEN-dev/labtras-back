@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 
 from ...domain.entities.manager import Manager
 
@@ -39,4 +40,19 @@ class ManagerRepositoryInterface(ABC):
     @abstractmethod
     def get_by_email(self, email: str) -> Optional[Manager]:
         """Get manager by email"""
+        pass
+
+    @abstractmethod
+    def get_by_department(self, department: str) -> List[Manager]:
+        """Get managers by department"""
+        pass
+
+    @abstractmethod
+    def search_by_name(self, name: str) -> List[Manager]:
+        """Search managers by name (partial match)"""
+        pass
+
+    @abstractmethod
+    def get_manager_bookings_count(self, manager_id: str) -> Dict[str, int]:
+        """Get booking statistics for a manager"""
         pass

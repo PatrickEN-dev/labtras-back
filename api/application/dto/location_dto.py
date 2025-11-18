@@ -18,33 +18,30 @@ class LocationInputDTO(serializers.Serializer):
         return value.strip()
 
 
-class LocationOutputDTO(serializers.ModelSerializer):
+class LocationOutputDTO:
     """
     DTO for Location output data representation
     """
 
-    active_rooms_count = serializers.SerializerMethodField()
+    def __init__(self, location: Location):
+        """Initialize with a Location entity"""
+        self.location = location
 
-    class Meta:
-        model = Location
-        fields = [
-            "id",
-            "name",
-            "address",
-            "description",
-            "active_rooms_count",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = ["id", "created_at", "updated_at"]
-
-    def get_active_rooms_count(self, obj):
-        """Get count of active rooms"""
-        return obj.get_active_rooms_count()
-
-    def to_representation(self, instance):
-        """Customize output representation"""
-        representation = super().to_representation(instance)
-        # Remove soft delete fields from response
-        representation.pop("deleted_at", None)
-        return representation
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON response"""
+        return {
+            "id": self.location.id,
+            "name": self.location.name,
+            "address": self.location.address,
+            "description": self.location.description,
+            "created_at": (
+                self.location.created_at.isoformat()
+                if self.location.created_at
+                else None
+            ),
+            "updated_at": (
+                self.location.updated_at.isoformat()
+                if self.location.updated_at
+                else None
+            ),
+        }

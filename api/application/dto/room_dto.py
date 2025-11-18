@@ -27,50 +27,37 @@ class RoomInputDTO(serializers.Serializer):
 
     def validate_location(self, value):
         """Validate location exists"""
-        if not Location.objects.filter(id=value, deleted_at__isnull=True).exists():
+
+        from ...models.location import Location as LocationModel
+
+        if not LocationModel.objects.filter(id=value, deleted_at__isnull=True).exists():
             raise serializers.ValidationError(
                 "Selected location does not exist or is deleted"
             )
         return value
 
 
-class RoomOutputDTO(serializers.ModelSerializer):
+class RoomOutputDTO:
     """
     DTO for Room output data representation
     """
 
-    location_name = serializers.CharField(source="location.name", read_only=True)
-    location_address = serializers.CharField(source="location.address", read_only=True)
-    active_bookings_count = serializers.SerializerMethodField()
+    def __init__(self, room: Room):
+        """Initialize with a Room entity"""
+        self.room = room
 
-    class Meta:
-        model = Room
-        fields = [
-            "id",
-            "name",
-            "capacity",
-            "description",
-            "location",
-            "location_name",
-            "location_address",
-            "active_bookings_count",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = [
-            "id",
-            "created_at",
-            "updated_at",
-            "location_name",
-            "location_address",
-        ]
-
-    def get_active_bookings_count(self, obj):
-        """Get count of active bookings"""
-        return obj.get_active_bookings_count()
-
-    def to_representation(self, instance):
-        """Customize output representation"""
-        representation = super().to_representation(instance)
-        representation.pop("deleted_at", None)
-        return representation
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON response"""
+        return {
+            "id": self.room.id,
+            "name": self.room.name,
+            "capacity": self.room.capacity,
+            "description": self.room.description,
+            "location_id": self.room.location_id,
+            "created_at": (
+                self.room.created_at.isoformat() if self.room.created_at else None
+            ),
+            "updated_at": (
+                self.room.updated_at.isoformat() if self.room.updated_at else None
+            ),
+        }

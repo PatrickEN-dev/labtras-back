@@ -164,31 +164,72 @@ class DjangoBookingRepository(BookingRepositoryInterface):
 
         return [self._model_to_entity(booking) for booking in queryset]
 
+    def get_active_bookings(
+        self, manager_id: Optional[str] = None, room_id: Optional[str] = None
+    ) -> List[Booking]:
+        """Get currently active bookings"""
+        now = timezone.now()
+        queryset = BookingModel.objects.select_related(
+            "room", "manager", "room__location"
+        ).filter(deleted_at__isnull=True, start_date__lte=now, end_date__gte=now)
+
+        if manager_id:
+            queryset = queryset.filter(manager_id=manager_id)
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+
+        return [self._model_to_entity(booking) for booking in queryset]
+
+    def get_upcoming_bookings(
+        self, manager_id: Optional[str] = None, room_id: Optional[str] = None
+    ) -> List[Booking]:
+        """Get upcoming bookings"""
+        now = timezone.now()
+        queryset = BookingModel.objects.select_related(
+            "room", "manager", "room__location"
+        ).filter(deleted_at__isnull=True, start_date__gt=now)
+
+        if manager_id:
+            queryset = queryset.filter(manager_id=manager_id)
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+
+        return [self._model_to_entity(booking) for booking in queryset]
+
+    def get_bookings_by_date_range(
+        self,
+        start_date,
+        end_date,
+        manager_id: Optional[str] = None,
+        room_id: Optional[str] = None,
+    ) -> List[Booking]:
+        """Get bookings within a date range"""
+        queryset = BookingModel.objects.select_related(
+            "room", "manager", "room__location"
+        ).filter(
+            deleted_at__isnull=True, start_date__lte=end_date, end_date__gte=start_date
+        )
+
+        if manager_id:
+            queryset = queryset.filter(manager_id=manager_id)
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+
+        return [self._model_to_entity(booking) for booking in queryset]
+
+    def can_manager_book_room(
+        self, manager_id: str, room_id: str, start_date, end_date
+    ) -> bool:
+        """Check if manager can book the room for given time period"""
+
+        conflicts = self.find_conflicts(room_id, start_date, end_date)
+        return len(conflicts) == 0
+
     def _model_to_entity(self, booking_model: BookingModel) -> Booking:
         """Convert Django model to domain entity"""
-        # Import here to avoid circular imports
-        from ..repositories.django_room_repository import DjangoRoomRepository
-        from ..repositories.django_manager_repository import DjangoManagerRepository
-
-        room_repo = DjangoRoomRepository()
-        manager_repo = DjangoManagerRepository()
-
-        room_entity = (
-            room_repo._model_to_entity(booking_model.room)
-            if booking_model.room
-            else None
-        )
-        manager_entity = (
-            manager_repo._model_to_entity(booking_model.manager)
-            if booking_model.manager
-            else None
-        )
-
         return Booking(
             id=str(booking_model.id),
-            room=room_entity,
             room_id=str(booking_model.room_id) if booking_model.room_id else None,
-            manager=manager_entity,
             manager_id=(
                 str(booking_model.manager_id) if booking_model.manager_id else None
             ),
@@ -199,4 +240,5 @@ class DjangoBookingRepository(BookingRepositoryInterface):
             coffee_description=booking_model.coffee_description,
             created_at=booking_model.created_at,
             updated_at=booking_model.updated_at,
+            deleted_at=booking_model.deleted_at,
         )

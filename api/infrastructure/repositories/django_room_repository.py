@@ -131,26 +131,70 @@ class DjangoRoomRepository(RoomRepositoryInterface):
         booking_repo = DjangoBookingRepository()
         return [booking_repo._model_to_entity(booking) for booking in queryset]
 
+    def get_available_rooms(
+        self, start_date: Any, end_date: Any, location_id: Optional[str] = None
+    ) -> List[Room]:
+        """Get available rooms for a time period"""
+        queryset = RoomModel.objects.filter(deleted_at__isnull=True)
+
+        if location_id:
+            queryset = queryset.filter(location_id=location_id)
+
+        # Get rooms that don't have conflicting bookings
+        conflicting_bookings = BookingModel.objects.filter(
+            deleted_at__isnull=True, start_date__lt=end_date, end_date__gt=start_date
+        ).values_list("room_id", flat=True)
+
+        available_rooms = queryset.exclude(id__in=conflicting_bookings)
+
+        return [self._model_to_entity(room) for room in available_rooms]
+
+    def has_active_bookings(self, room_id: str) -> bool:
+        """Check if room has any active bookings"""
+        now = timezone.now()
+        return BookingModel.objects.filter(
+            room_id=room_id, deleted_at__isnull=True, end_date__gte=now
+        ).exists()
+
+    def get_room_bookings_count(self, room_id: str) -> Dict[str, int]:
+        """Get booking statistics for a room"""
+        now = timezone.now()
+
+        total = BookingModel.objects.filter(
+            room_id=room_id, deleted_at__isnull=True
+        ).count()
+
+        active = BookingModel.objects.filter(
+            room_id=room_id,
+            deleted_at__isnull=True,
+            start_date__lte=now,
+            end_date__gte=now,
+        ).count()
+
+        upcoming = BookingModel.objects.filter(
+            room_id=room_id, deleted_at__isnull=True, start_date__gt=now
+        ).count()
+
+        completed = BookingModel.objects.filter(
+            room_id=room_id, deleted_at__isnull=True, end_date__lt=now
+        ).count()
+
+        return {
+            "total": total,
+            "active": active,
+            "upcoming": upcoming,
+            "completed": completed,
+        }
+
     def _model_to_entity(self, room_model: RoomModel) -> Room:
         """Convert Django model to domain entity"""
-        # Import here to avoid circular imports
-        from ..repositories.django_location_repository import DjangoLocationRepository
-
-        location_repo = DjangoLocationRepository()
-
-        location_entity = (
-            location_repo._model_to_entity(room_model.location)
-            if room_model.location
-            else None
-        )
-
         return Room(
             id=str(room_model.id),
-            location=location_entity,
-            location_id=str(room_model.location_id) if room_model.location_id else None,
             name=room_model.name,
             capacity=room_model.capacity,
+            location_id=str(room_model.location_id) if room_model.location_id else None,
             description=room_model.description,
             created_at=room_model.created_at,
             updated_at=room_model.updated_at,
+            deleted_at=room_model.deleted_at,
         )

@@ -44,8 +44,6 @@ class DjangoManagerRepository(ManagerRepositoryInterface):
         queryset = ManagerModel.objects.filter(deleted_at__isnull=True)
 
         if filters:
-            if "department" in filters:
-                queryset = queryset.filter(department__icontains=filters["department"])
             if "name" in filters:
                 queryset = queryset.filter(name__icontains=filters["name"])
             if "email" in filters:
@@ -128,14 +126,56 @@ class DjangoManagerRepository(ManagerRepositoryInterface):
             deleted_at__isnull=True,
         ).count()
 
+    def get_by_department(self, department: str) -> List[Manager]:
+        """Get managers by department - Not implemented as department field doesn't exist"""
+        # Department field doesn't exist in the model, returning empty list
+        return []
+
+    def search_by_name(self, name: str) -> List[Manager]:
+        """Search managers by name (partial match)"""
+        queryset = ManagerModel.objects.filter(
+            name__icontains=name, deleted_at__isnull=True
+        )
+        return [self._model_to_entity(manager) for manager in queryset]
+
+    def get_manager_bookings_count(self, manager_id: str) -> Dict[str, int]:
+        """Get booking statistics for a manager"""
+        now = timezone.now()
+
+        total = BookingModel.objects.filter(
+            manager_id=manager_id, deleted_at__isnull=True
+        ).count()
+
+        active = BookingModel.objects.filter(
+            manager_id=manager_id,
+            deleted_at__isnull=True,
+            start_date__lte=now,
+            end_date__gte=now,
+        ).count()
+
+        upcoming = BookingModel.objects.filter(
+            manager_id=manager_id, deleted_at__isnull=True, start_date__gt=now
+        ).count()
+
+        completed = BookingModel.objects.filter(
+            manager_id=manager_id, deleted_at__isnull=True, end_date__lt=now
+        ).count()
+
+        return {
+            "total": total,
+            "active": active,
+            "upcoming": upcoming,
+            "completed": completed,
+        }
+
     def _model_to_entity(self, manager_model: ManagerModel) -> Manager:
         """Convert Django model to domain entity"""
         return Manager(
             id=str(manager_model.id),
             name=manager_model.name,
             email=manager_model.email,
-            department=manager_model.department,
             phone=manager_model.phone,
             created_at=manager_model.created_at,
             updated_at=manager_model.updated_at,
+            deleted_at=manager_model.deleted_at,
         )

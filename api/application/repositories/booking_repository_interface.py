@@ -58,3 +58,35 @@ class BookingRepositoryInterface(ABC):
     def get_by_manager(self, manager_id: str) -> List[Booking]:
         """Get all bookings for a specific manager"""
         pass
+
+    @abstractmethod
+    def get_active_bookings(
+        self, manager_id: Optional[str] = None, room_id: Optional[str] = None
+    ) -> List[Booking]:
+        """Get currently active bookings, optionally filtered by manager or room"""
+        pass
+
+    @abstractmethod
+    def get_upcoming_bookings(
+        self, manager_id: Optional[str] = None, room_id: Optional[str] = None
+    ) -> List[Booking]:
+        """Get upcoming bookings, optionally filtered by manager or room"""
+        pass
+
+    @abstractmethod
+    def get_bookings_by_date_range(
+        self,
+        start_date: datetime,
+        end_date: datetime,
+        manager_id: Optional[str] = None,
+        room_id: Optional[str] = None,
+    ) -> List[Booking]:
+        """Get bookings within a date range"""
+        pass
+
+    @abstractmethod
+    def can_manager_book_room(
+        self, manager_id: str, room_id: str, start_date: datetime, end_date: datetime
+    ) -> bool:
+        """Check if manager can book the room for given time period"""
+        pass

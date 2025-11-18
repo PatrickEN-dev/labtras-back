@@ -24,29 +24,29 @@ class ManagerInputDTO(serializers.Serializer):
         return value.strip().lower()
 
 
-class ManagerOutputDTO(serializers.ModelSerializer):
+class ManagerOutputDTO:
     """
     DTO for Manager output data representation
     """
 
-    active_bookings_count = serializers.SerializerMethodField()
+    def __init__(self, manager: Manager):
+        """Initialize with a Manager entity"""
+        self.manager = manager
 
-    class Meta:
-        model = Manager
-        fields = [
-            "id",
-            "name",
-            "email",
-            "phone",
-            "active_bookings_count",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = ["id", "created_at", "updated_at"]
-
-    def get_active_bookings_count(self, obj):
-        """Get count of active bookings"""
-        return obj.get_active_bookings_count()
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON response"""
+        return {
+            "id": self.manager.id,
+            "name": self.manager.name,
+            "email": self.manager.email,
+            "phone": self.manager.phone,
+            "created_at": (
+                self.manager.created_at.isoformat() if self.manager.created_at else None
+            ),
+            "updated_at": (
+                self.manager.updated_at.isoformat() if self.manager.updated_at else None
+            ),
+        }
 
     def to_representation(self, instance):
         """Customize output representation"""

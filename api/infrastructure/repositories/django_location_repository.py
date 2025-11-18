@@ -90,20 +90,27 @@ class DjangoLocationRepository(LocationRepositoryInterface):
             location_model = LocationModel.objects.get(
                 id=location_id, deleted_at__isnull=True
             )
-            # Import here to avoid circular imports
+
             from ...models import Room as RoomModel
 
             room_models = RoomModel.objects.filter(
                 location=location_model, deleted_at__isnull=True
             )
 
-            # Convert to room entities
             from ..repositories.django_room_repository import DjangoRoomRepository
 
             room_repo = DjangoRoomRepository()
             return [room_repo._model_to_entity(room) for room in room_models]
         except LocationModel.DoesNotExist:
             return []
+
+    def has_active_rooms(self, location_id: str) -> bool:
+        """Check if location has any active rooms"""
+        from ...models import Room as RoomModel
+
+        return RoomModel.objects.filter(
+            location_id=location_id, deleted_at__isnull=True
+        ).exists()
 
     def _model_to_entity(self, location_model: LocationModel) -> Location:
         """Convert Django model to domain entity"""

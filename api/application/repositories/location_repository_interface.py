@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any
+from datetime import datetime
+
+from django import db
 
 from ...domain.entities.location import Location
 
@@ -29,9 +32,25 @@ class LocationRepositoryInterface(ABC):
         self, location_id: str, location_data: Dict[str, Any]
     ) -> Optional[Location]:
         """Update an existing location"""
+
         pass
 
     @abstractmethod
     def soft_delete(self, location_id: str) -> bool:
         """Soft delete a location"""
+        pass
+
+    @abstractmethod
+    def search_by_name(self, name: str) -> List[Location]:
+        """Search locations by name (partial match)"""
+        pass
+
+    @abstractmethod
+    def get_rooms_by_location(self, location_id: str) -> List[Any]:
+        """Get all rooms for a specific location"""
+        pass
+
+    @abstractmethod
+    def has_active_rooms(self, location_id: str) -> bool:
+        """Check if location has any active rooms"""
         pass

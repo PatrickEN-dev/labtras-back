@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 
 from ...domain.entities.room import Room
 
@@ -37,4 +38,28 @@ class RoomRepositoryInterface(ABC):
     @abstractmethod
     def get_by_location(self, location_id: str) -> List[Room]:
         """Get all rooms for a specific location"""
+        pass
+
+    @abstractmethod
+    def get_available_rooms(
+        self, start_date: Any, end_date: Any, location_id: Optional[str] = None
+    ) -> List[Room]:
+        """Get available rooms for a time period"""
+        pass
+
+    @abstractmethod
+    def check_name_uniqueness(
+        self, name: str, location_id: str, exclude_room_id: Optional[str] = None
+    ) -> bool:
+        """Check if room name is unique within a location"""
+        pass
+
+    @abstractmethod
+    def has_active_bookings(self, room_id: str) -> bool:
+        """Check if room has any active bookings"""
+        pass
+
+    @abstractmethod
+    def get_room_bookings_count(self, room_id: str) -> Dict[str, int]:
+        """Get booking statistics for a room"""
         pass

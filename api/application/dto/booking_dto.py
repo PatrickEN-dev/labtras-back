@@ -19,7 +19,10 @@ class BookingInputDTO(serializers.Serializer):
 
     def validate_room(self, value):
         """Validate room exists"""
-        if not Room.objects.filter(id=value, deleted_at__isnull=True).exists():
+        # Import Django model here to avoid circular imports
+        from ...models.room import Room as RoomModel
+
+        if not RoomModel.objects.filter(id=value, deleted_at__isnull=True).exists():
             raise serializers.ValidationError(
                 "Selected room does not exist or is deleted"
             )
@@ -27,7 +30,10 @@ class BookingInputDTO(serializers.Serializer):
 
     def validate_manager(self, value):
         """Validate manager exists"""
-        if not Manager.objects.filter(id=value, deleted_at__isnull=True).exists():
+        # Import Django model here to avoid circular imports
+        from ...models.manager import Manager as ManagerModel
+
+        if not ManagerModel.objects.filter(id=value, deleted_at__isnull=True).exists():
             raise serializers.ValidationError(
                 "Selected manager does not exist or is deleted"
             )
@@ -54,63 +60,34 @@ class BookingInputDTO(serializers.Serializer):
         return data
 
 
-class BookingOutputDTO(serializers.ModelSerializer):
+class BookingOutputDTO:
     """
     DTO for Booking output data representation
     """
 
-    room_name = serializers.CharField(source="room.name", read_only=True)
-    room_location = serializers.CharField(source="room.location.name", read_only=True)
-    manager_name = serializers.CharField(source="manager.name", read_only=True)
-    manager_email = serializers.CharField(source="manager.email", read_only=True)
-    duration_hours = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
+    def __init__(self, booking: Booking):
+        """Initialize with a Booking entity"""
+        self.booking = booking
 
-    class Meta:
-        model = Booking
-        fields = [
-            "id",
-            "room",
-            "room_name",
-            "room_location",
-            "manager",
-            "manager_name",
-            "manager_email",
-            "start_date",
-            "end_date",
-            "duration_hours",
-            "coffee_option",
-            "coffee_quantity",
-            "coffee_description",
-            "status",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = [
-            "id",
-            "created_at",
-            "updated_at",
-            "room_name",
-            "room_location",
-            "manager_name",
-            "manager_email",
-        ]
-
-    def get_duration_hours(self, obj):
-        """Get booking duration in hours"""
-        return obj.duration_hours
-
-    def get_status(self, obj):
-        """Get booking status"""
-        if obj.is_current:
-            return "current"
-        elif obj.is_future:
-            return "scheduled"
-        else:
-            return "completed"
-
-    def to_representation(self, instance):
-        """Customize output representation"""
-        representation = super().to_representation(instance)
-        representation.pop("deleted_at", None)
-        return representation
+    def to_dict(self) -> dict:
+        """Convert to dictionary for JSON response"""
+        return {
+            "id": self.booking.id,
+            "room_id": self.booking.room_id,
+            "manager_id": self.booking.manager_id,
+            "start_date": (
+                self.booking.start_date.isoformat() if self.booking.start_date else None
+            ),
+            "end_date": (
+                self.booking.end_date.isoformat() if self.booking.end_date else None
+            ),
+            "coffee_option": self.booking.coffee_option,
+            "coffee_quantity": self.booking.coffee_quantity,
+            "coffee_description": self.booking.coffee_description,
+            "created_at": (
+                self.booking.created_at.isoformat() if self.booking.created_at else None
+            ),
+            "updated_at": (
+                self.booking.updated_at.isoformat() if self.booking.updated_at else None
+            ),
+        }
