@@ -39,8 +39,8 @@ class ManagerViewSet(viewsets.ViewSet):
     def create(self, request):
         """Create a new manager"""
         try:
-            # 1. Validate input using DTO
-            input_dto = ManagerInputDTO(request.data)
+
+            input_dto = ManagerInputDTO(data=request.data)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -194,6 +194,33 @@ class ManagerViewSet(viewsets.ViewSet):
             return Response(
                 [dto.to_dict() for dto in output_dtos], status=status.HTTP_200_OK
             )
+
+        except Exception as e:
+            return Response(
+                {"error": "Internal server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=False, methods=["get"])
+    def by_email(self, request):
+        """Get manager by email"""
+        try:
+            email = request.query_params.get("email")
+            if not email:
+                return Response(
+                    {"error": "email parameter is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            manager = self.manager_repository.get_by_email(email)
+
+            if not manager:
+                return Response(
+                    {"error": "Manager not found"}, status=status.HTTP_404_NOT_FOUND
+                )
+
+            output_dto = ManagerOutputDTO(manager)
+            return Response(output_dto.to_dict(), status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(

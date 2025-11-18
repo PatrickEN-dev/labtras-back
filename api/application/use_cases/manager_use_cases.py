@@ -18,12 +18,9 @@ class CreateManagerUseCase:
         """
         Execute the use case to create a manager
         """
-        # 1. Validate input data
+
         email = manager_data.get("email")
         name = manager_data.get("name")
-
-        # 2. Apply domain rules
-        from ...domain.services.manager_domain_service import ManagerDomainService
 
         ManagerDomainService.validate_email_format(email)
         ManagerDomainService.validate_name_format(name)
@@ -32,23 +29,16 @@ class CreateManagerUseCase:
         if not ManagerDomainService.validate_email_uniqueness(email):
             raise ValueError(f"Manager with email '{email}' already exists")
 
-        # 4. Validate department if provided
-        if manager_data.get("department"):
-            ManagerDomainService.validate_department_format(
-                manager_data.get("department")
-            )  # 4. Prepare data for repository
+        # 4. Prepare data for repository
         repository_data = {
             "name": name,
             "email": email,
-            "department": manager_data.get("department"),
             "phone": manager_data.get("phone"),
         }
 
-        # 5. Validate phone if provided
         if repository_data["phone"]:
             ManagerDomainService.validate_phone_format(repository_data["phone"])
 
-        # 6. Create manager
         return self.manager_repository.create(repository_data)
 
 

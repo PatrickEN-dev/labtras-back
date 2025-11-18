@@ -23,9 +23,6 @@ class CreateLocationUseCase:
         if not name or not name.strip():
             raise ValueError("Location name is required")
 
-        if not address or not address.strip():
-            raise ValueError("Location address is required")
-
         # 2. Check name uniqueness
         existing_location = self.location_repository.get_by_name(name.strip())
         if existing_location:
@@ -34,7 +31,7 @@ class CreateLocationUseCase:
         # 3. Prepare data for repository
         repository_data = {
             "name": name.strip(),
-            "address": address.strip(),
+            "address": address.strip() if address else None,
             "description": location_data.get("description", "").strip(),
         }
 
@@ -77,10 +74,7 @@ class UpdateLocationUseCase:
 
         if "address" in update_data:
             new_address = update_data["address"]
-            if not new_address or not new_address.strip():
-                raise ValueError("Location address is required")
-
-            update_data["address"] = new_address.strip()
+            update_data["address"] = new_address.strip() if new_address else None
 
         if "description" in update_data:
             update_data["description"] = update_data["description"].strip()

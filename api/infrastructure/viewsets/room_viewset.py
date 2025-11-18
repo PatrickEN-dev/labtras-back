@@ -48,17 +48,15 @@ class RoomViewSet(viewsets.ViewSet):
     def create(self, request):
         """Create a new room"""
         try:
-            # 1. Validate input using DTO
-            input_dto = RoomInputDTO(request.data)
+
+            input_dto = RoomInputDTO(data=request.data)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2. Execute use case
             room = self.create_use_case.execute(input_dto.validated_data)
 
-            # 3. Return response using DTO
             output_dto = RoomOutputDTO(room)
             return Response(output_dto.to_dict(), status=status.HTTP_201_CREATED)
 
@@ -136,7 +134,7 @@ class RoomViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
         """Update a room"""
         try:
-            input_dto = RoomInputDTO(request.data, partial=True)
+            input_dto = RoomInputDTO(data=request.data, partial=True)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST

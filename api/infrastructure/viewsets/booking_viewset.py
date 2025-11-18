@@ -43,7 +43,7 @@ class BookingViewSet(viewsets.ViewSet):
         """Create a new booking"""
         try:
 
-            input_dto = BookingInputDTO(request.data)
+            input_dto = BookingInputDTO(data=request.data)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -138,7 +138,7 @@ class BookingViewSet(viewsets.ViewSet):
         """Update a booking"""
         try:
 
-            input_dto = BookingInputDTO(request.data, partial=True)
+            input_dto = BookingInputDTO(data=request.data, partial=True)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST

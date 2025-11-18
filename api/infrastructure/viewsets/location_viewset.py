@@ -42,7 +42,7 @@ class LocationViewSet(viewsets.ViewSet):
     def create(self, request):
         """Create a new location"""
         try:
-            input_dto = LocationInputDTO(request.data)
+            input_dto = LocationInputDTO(data=request.data)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
@@ -56,8 +56,14 @@ class LocationViewSet(viewsets.ViewSet):
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            import traceback
+
             return Response(
-                {"error": "Internal server error"},
+                {
+                    "error": "Internal server error",
+                    "details": str(e),
+                    "traceback": traceback.format_exc(),
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
@@ -110,7 +116,7 @@ class LocationViewSet(viewsets.ViewSet):
     def update(self, request, pk=None):
         """Update a location"""
         try:
-            input_dto = LocationInputDTO(request.data, partial=True)
+            input_dto = LocationInputDTO(data=request.data, partial=True)
             if not input_dto.is_valid():
                 return Response(
                     {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST

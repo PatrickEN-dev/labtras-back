@@ -43,7 +43,7 @@ class ManagerDomainService:
         Validate phone format (Brazilian format)
         """
         if not phone or not phone.strip():
-            raise ValueError("Phone is required")
+            return
 
         phone = phone.strip()
         clean_phone = re.sub(r"[\s\-\(\)\+]", "", phone)

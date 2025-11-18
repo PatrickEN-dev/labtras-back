@@ -2,9 +2,13 @@ from django.db import models
 import uuid
 
 
+def generate_uuid():
+    return str(uuid.uuid4())
+
+
 class Manager(models.Model):
     id = models.CharField(
-        max_length=25, primary_key=True, default=uuid.uuid4, editable=False
+        max_length=36, primary_key=True, default=generate_uuid, editable=False
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
