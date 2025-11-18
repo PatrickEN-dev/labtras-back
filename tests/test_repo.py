@@ -12,21 +12,16 @@ django.setup()
 
 def test_room_repository():
     try:
-        print("Testing Room Repository...")
         from api.infrastructure.repositories.django_room_repository import (
             DjangoRoomRepository,
         )
 
         repo = DjangoRoomRepository()
-        print("Repository instantiated successfully!")
-
         rooms = repo.get_all()
-        print(f"Found {len(rooms)} rooms")
 
         return True
 
     except Exception as e:
-        print(f"Error: {e}")
         import traceback
 
         traceback.print_exc()
