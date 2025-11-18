@@ -25,6 +25,8 @@ class Booking(models.Model):
         related_name="bookings",
         db_column="manager_id",
     )
+    name = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     coffee_option = models.BooleanField(default=False)
@@ -35,6 +37,8 @@ class Booking(models.Model):
         db_table = "bookings"
 
     def __str__(self):
+        if self.name:
+            return f"{self.name} - {self.room.name} ({self.start_date.strftime('%d/%m/%Y %H:%M')})"
         return f"{self.room.name} - {self.start_date} to {self.end_date}"
 
     def save(self, *args, **kwargs):

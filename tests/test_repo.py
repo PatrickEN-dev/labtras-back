@@ -3,11 +3,9 @@ import os
 import sys
 import django
 
-# Adicionar o caminho do projeto
 sys.path.append(".")
 sys.path.append("./api")
 
-# Configurar Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 django.setup()
 
@@ -22,7 +20,6 @@ def test_room_repository():
         repo = DjangoRoomRepository()
         print("Repository instantiated successfully!")
 
-        # Test get_all method
         rooms = repo.get_all()
         print(f"Found {len(rooms)} rooms")
 

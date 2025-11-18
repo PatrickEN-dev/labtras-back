@@ -67,13 +67,11 @@ class BookingViewSet(viewsets.ViewSet):
         try:
 
             filters = {}
-            # Aceitar tanto 'room' quanto 'room_id' para compatibilidade
             if request.query_params.get("room") or request.query_params.get("room_id"):
                 filters["room_id"] = request.query_params.get(
                     "room"
                 ) or request.query_params.get("room_id")
 
-            # Aceitar tanto 'manager' quanto 'manager_id' para compatibilidade
             if request.query_params.get("manager") or request.query_params.get(
                 "manager_id"
             ):
@@ -81,7 +79,6 @@ class BookingViewSet(viewsets.ViewSet):
                     "manager"
                 ) or request.query_params.get("manager_id")
 
-            # Aceitar diferentes formatos de datas
             if request.query_params.get("start_date_from") or request.query_params.get(
                 "start_date"
             ):

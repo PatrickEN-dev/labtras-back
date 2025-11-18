@@ -145,10 +145,10 @@ class RoomDomainService:
             duration = booking.end_date - booking.start_date
             total_duration_hours += duration.total_seconds() / 3600
 
-            if booking.manager and booking.manager.name:
-                manager_name = booking.manager.name
-                user_booking_count[manager_name] = (
-                    user_booking_count.get(manager_name, 0) + 1
+            if booking.manager_id:
+                manager_id = booking.manager_id
+                user_booking_count[manager_id] = (
+                    user_booking_count.get(manager_id, 0) + 1
                 )
 
         if len(all_bookings) > 0:

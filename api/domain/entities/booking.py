@@ -14,6 +14,8 @@ class Booking:
         id: str = None,
         room_id: str = None,
         manager_id: str = None,
+        name: str = None,
+        description: Optional[str] = None,
         start_date: datetime = None,
         end_date: datetime = None,
         coffee_option: bool = False,
@@ -26,6 +28,8 @@ class Booking:
         self.id = id or str(uuid.uuid4())
         self.room_id = room_id
         self.manager_id = manager_id
+        self.name = name
+        self.description = description
         self.start_date = start_date
         self.end_date = end_date
         self.coffee_option = coffee_option
@@ -36,6 +40,8 @@ class Booking:
         self.deleted_at = deleted_at
 
     def __str__(self):
+        if self.name:
+            return f"Booking {self.name} ({self.id[:8]}...)"
         return f"Booking {self.id} - {self.start_date} to {self.end_date}"
 
     @property

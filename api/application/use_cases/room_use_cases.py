@@ -238,7 +238,7 @@ class CheckRoomAvailabilityUseCase:
                     "booking_id": conflict.id,
                     "start_date": conflict.start_date,
                     "end_date": conflict.end_date,
-                    "manager": conflict.manager.name if conflict.manager else None,
+                    "manager_id": conflict.manager_id,
                 }
                 for conflict in conflicts
             ]

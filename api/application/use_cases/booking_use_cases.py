@@ -32,6 +32,8 @@ class CreateBookingUseCase:
         # 1. Validate input data structure
         room_id = booking_data.get("room")
         manager_id = booking_data.get("manager")
+        name = booking_data.get("name")
+        description = booking_data.get("description")
         start_date = booking_data.get("start_date")
         end_date = booking_data.get("end_date")
         coffee_option = booking_data.get("coffee_option", False)
@@ -60,7 +62,7 @@ class CreateBookingUseCase:
                 room, start_date, end_date
             )
             conflict_info = [
-                f"Conflict with booking from {c.start_date} to {c.end_date} by {c.manager.name if c.manager else 'Unknown'}"
+                f"Conflict with booking from {c.start_date} to {c.end_date} by manager {c.manager_id}"
                 for c in conflicts
             ]
             raise ValueError(
@@ -71,6 +73,8 @@ class CreateBookingUseCase:
         repository_data = {
             "room_id": room_id,
             "manager_id": manager_id,
+            "name": name,
+            "description": description,
             "start_date": start_date,
             "end_date": end_date,
             "coffee_option": coffee_option,

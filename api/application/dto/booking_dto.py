@@ -11,6 +11,8 @@ class BookingInputDTO(serializers.Serializer):
 
     room = serializers.CharField()  # Room ID
     manager = serializers.CharField()  # Manager ID
+    name = serializers.CharField(max_length=200)
+    description = serializers.CharField(required=False, allow_blank=True)
     start_date = serializers.DateTimeField()
     end_date = serializers.DateTimeField()
     coffee_option = serializers.BooleanField(default=False)
@@ -75,6 +77,8 @@ class BookingOutputDTO:
             "id": self.booking.id,
             "room_id": self.booking.room_id,
             "manager_id": self.booking.manager_id,
+            "name": self.booking.name,
+            "description": self.booking.description,
             "start_date": (
                 self.booking.start_date.isoformat() if self.booking.start_date else None
             ),

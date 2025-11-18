@@ -36,6 +36,48 @@ class ManagerViewSet(viewsets.ViewSet):
         self.search_use_case = SearchManagersUseCase(self.manager_repository)
         self.stats_use_case = GetManagerStatsUseCase(self.manager_repository)
 
+    @action(detail=False, methods=["post"], url_path="get-or-create-default")
+    def get_or_create_default(self, request):
+        """Get or create default manager data for frontend standardization"""
+        try:
+            # Dados padrão para o manager
+            default_data = {
+                "name": "João Silva",
+                "email": "joao.silva@empresa.com",
+                "phone": "(11) 99999-1111",
+            }
+
+            # Tentar buscar manager existente pelo email
+            from ...models.manager import Manager
+
+            try:
+                manager = Manager.objects.get(email=default_data["email"])
+                output_dto = ManagerOutputDTO(manager)
+                return Response(
+                    {"created": False, "manager": output_dto.to_dict()},
+                    status=status.HTTP_200_OK,
+                )
+            except Manager.DoesNotExist:
+                # Se não existir, criar novo
+                input_dto = ManagerInputDTO(data=default_data)
+                if not input_dto.is_valid():
+                    return Response(
+                        {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                manager = self.create_use_case.execute(input_dto.validated_data)
+                output_dto = ManagerOutputDTO(manager)
+                return Response(
+                    {"created": True, "manager": output_dto.to_dict()},
+                    status=status.HTTP_201_CREATED,
+                )
+
+        except Exception as e:
+            return Response(
+                {"error": "Internal server error", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
     def create(self, request):
         """Create a new manager"""
         try:
@@ -242,5 +284,59 @@ class ManagerViewSet(viewsets.ViewSet):
         except Exception as e:
             return Response(
                 {"error": "Internal server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=False, methods=["post"])
+    def upsert(self, request):
+        """Create manager or return existing one with same email"""
+        try:
+            input_dto = ManagerInputDTO(data=request.data)
+            if not input_dto.is_valid():
+                return Response(
+                    {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            email = input_dto.validated_data.get("email")
+
+            # Check if manager with this email already exists
+            try:
+                existing_manager = self.manager_repository.get_by_email(email)
+                if existing_manager:
+                    output_dto = ManagerOutputDTO(existing_manager)
+                    return Response(
+                        {
+                            "message": f"Manager with email '{email}' already exists",
+                            "data": output_dto.to_dict(),
+                            "created": False,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            except:
+                pass  # Continue to create new manager
+
+            # Create new manager
+            manager = self.create_use_case.execute(input_dto.validated_data)
+            output_dto = ManagerOutputDTO(manager)
+            return Response(
+                {
+                    "message": f"Manager with email '{email}' created successfully",
+                    "data": output_dto.to_dict(),
+                    "created": True,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            import traceback
+
+            return Response(
+                {
+                    "error": "Internal server error",
+                    "details": str(e),
+                    "traceback": traceback.format_exc(),
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

@@ -39,6 +39,48 @@ class LocationViewSet(viewsets.ViewSet):
             self.location_repository
         )
 
+    @action(detail=False, methods=["post"], url_path="get-or-create-default")
+    def get_or_create_default(self, request):
+        """Get or create default location data for frontend standardization"""
+        try:
+            # Dados padrão para a location
+            default_data = {
+                "name": "Matriz - Centro",
+                "address": "Av. Principal, 123, Centro",
+                "description": "Edifício corporativo principal",
+            }
+
+            # Tentar buscar location existente pelo nome
+            from ...models.location import Location
+
+            try:
+                location = Location.objects.get(name=default_data["name"])
+                output_dto = LocationOutputDTO(location)
+                return Response(
+                    {"created": False, "location": output_dto.to_dict()},
+                    status=status.HTTP_200_OK,
+                )
+            except Location.DoesNotExist:
+                # Se não existir, criar nova
+                input_dto = LocationInputDTO(data=default_data)
+                if not input_dto.is_valid():
+                    return Response(
+                        {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                location = self.create_use_case.execute(input_dto.validated_data)
+                output_dto = LocationOutputDTO(location)
+                return Response(
+                    {"created": True, "location": output_dto.to_dict()},
+                    status=status.HTTP_201_CREATED,
+                )
+
+        except Exception as e:
+            return Response(
+                {"error": "Internal server error", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
     def create(self, request):
         """Create a new location"""
         try:
@@ -205,5 +247,62 @@ class LocationViewSet(viewsets.ViewSet):
         except Exception as e:
             return Response(
                 {"error": "Internal server error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    @action(detail=False, methods=["post"])
+    def upsert(self, request):
+        """Create location or return existing one with same name"""
+        try:
+            input_dto = LocationInputDTO(data=request.data)
+            if not input_dto.is_valid():
+                return Response(
+                    {"errors": input_dto.errors}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            name = input_dto.validated_data.get("name")
+
+            # Check if location with this name already exists
+            try:
+                existing_locations = self.location_repository.find_by_filters(
+                    {"name": name}
+                )
+                if existing_locations:
+                    existing_location = existing_locations[0]
+                    output_dto = LocationOutputDTO(existing_location)
+                    return Response(
+                        {
+                            "message": f"Location '{name}' already exists",
+                            "data": output_dto.to_dict(),
+                            "created": False,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            except:
+                pass  # Continue to create new location
+
+            # Create new location
+            location = self.create_use_case.execute(input_dto.validated_data)
+            output_dto = LocationOutputDTO(location)
+            return Response(
+                {
+                    "message": f"Location '{name}' created successfully",
+                    "data": output_dto.to_dict(),
+                    "created": True,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            import traceback
+
+            return Response(
+                {
+                    "error": "Internal server error",
+                    "details": str(e),
+                    "traceback": traceback.format_exc(),
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

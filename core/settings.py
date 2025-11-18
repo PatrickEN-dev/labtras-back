@@ -32,8 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "corsheaders",
-    # "django.contrib.admin",      # Removido para não precisar de auth
-    "django.contrib.auth",  # Mantido para compatibilidade
+    "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -47,8 +46,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",  # Comentado para remover CSRF
-    # "django.contrib.auth.middleware.AuthenticationMiddleware",  # Comentado para remover auth
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -57,14 +54,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# Para desenvolvimento - permite qualquer origem
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-# Configurações do Django REST Framework - SEM AUTENTICAÇÃO
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [],  # Remove toda autenticação
-    "DEFAULT_PERMISSION_CLASSES": [],  # Remove todas as permissões
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",

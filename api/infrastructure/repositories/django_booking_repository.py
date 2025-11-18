@@ -233,6 +233,8 @@ class DjangoBookingRepository(BookingRepositoryInterface):
             manager_id=(
                 str(booking_model.manager_id) if booking_model.manager_id else None
             ),
+            name=booking_model.name,
+            description=booking_model.description,
             start_date=booking_model.start_date,
             end_date=booking_model.end_date,
             coffee_option=booking_model.coffee_option,

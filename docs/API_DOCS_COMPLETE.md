@@ -32,14 +32,15 @@ http://127.0.0.1:8000/api
 
 ### Endpoints Disponíveis
 
-| Método | Endpoint           | Descrição                  |
-| ------ | ------------------ | -------------------------- |
-| GET    | `/locations/`      | Listar todos os locais     |
-| POST   | `/locations/`      | Criar novo local           |
-| GET    | `/locations/{id}/` | Buscar local por ID        |
-| PUT    | `/locations/{id}/` | Atualizar local (completo) |
-| PATCH  | `/locations/{id}/` | Atualizar local (parcial)  |
-| DELETE | `/locations/{id}/` | Deletar local              |
+| Método | Endpoint                            | Descrição                  |
+| ------ | ----------------------------------- | -------------------------- |
+| GET    | `/locations/`                       | Listar todos os locais     |
+| POST   | `/locations/`                       | Criar novo local           |
+| POST   | `/locations/get-or-create-default/` | **Obter dados padrão** ⭐  |
+| GET    | `/locations/{id}/`                  | Buscar local por ID        |
+| PUT    | `/locations/{id}/`                  | Atualizar local (completo) |
+| PATCH  | `/locations/{id}/`                  | Atualizar local (parcial)  |
+| DELETE | `/locations/{id}/`                  | Deletar local              |
 
 ### Filtros de Consulta
 
@@ -75,20 +76,45 @@ Content-Type: application/json
 }
 ```
 
+#### ⭐ **Obter Dados Padrão (Recomendado para Frontend)**
+
+```bash
+POST /api/locations/get-or-create-default/
+```
+
+#### ✅ Resposta
+
+```json
+{
+  "created": false,
+  "location": {
+    "id": "04f51fa5-e6b7-4b3d-9f22-663f0a79be80",
+    "name": "Matriz - Centro",
+    "address": "Av. Principal, 123, Centro",
+    "description": "Edifício corporativo principal",
+    "created_at": "2025-11-18T20:05:59.726032Z",
+    "updated_at": "2025-11-18T20:05:59.726070Z"
+  }
+}
+```
+
+> **💡 Importante:** Este endpoint sempre retorna os mesmos dados padronizados. Use `created: false` para saber se os dados já existiam.
+
 ---
 
 ## 👥 **MANAGERS** (Gestores)
 
 ### Endpoints Disponíveis
 
-| Método | Endpoint          | Descrição                   |
-| ------ | ----------------- | --------------------------- |
-| GET    | `/managers/`      | Listar todos os gestores    |
-| POST   | `/managers/`      | Criar novo gestor           |
-| GET    | `/managers/{id}/` | Buscar gestor por ID        |
-| PUT    | `/managers/{id}/` | Atualizar gestor (completo) |
-| PATCH  | `/managers/{id}/` | Atualizar gestor (parcial)  |
-| DELETE | `/managers/{id}/` | Deletar gestor              |
+| Método | Endpoint                           | Descrição                   |
+| ------ | ---------------------------------- | --------------------------- |
+| GET    | `/managers/`                       | Listar todos os gestores    |
+| POST   | `/managers/`                       | Criar novo gestor           |
+| POST   | `/managers/get-or-create-default/` | **Obter dados padrão** ⭐   |
+| GET    | `/managers/{id}/`                  | Buscar gestor por ID        |
+| PUT    | `/managers/{id}/`                  | Atualizar gestor (completo) |
+| PATCH  | `/managers/{id}/`                  | Atualizar gestor (parcial)  |
+| DELETE | `/managers/{id}/`                  | Deletar gestor              |
 
 ### Ações Customizadas
 
@@ -125,20 +151,45 @@ Content-Type: application/json
 }
 ```
 
+#### ⭐ **Obter Dados Padrão (Recomendado para Frontend)**
+
+```bash
+POST /api/managers/get-or-create-default/
+```
+
+#### ✅ Resposta
+
+```json
+{
+  "created": false,
+  "manager": {
+    "id": "10a9f81f-6680-4e40-a54e-828ef05e43d1",
+    "name": "João Silva",
+    "email": "joao.silva@empresa.com",
+    "phone": "(11) 99999-1111",
+    "created_at": "2025-11-17T23:18:31.589363Z",
+    "updated_at": "2025-11-17T23:18:31.589377Z"
+  }
+}
+```
+
+> **💡 Importante:** Este endpoint sempre retorna os mesmos dados padronizados. Use `created: false` para saber se os dados já existiam.
+
 ---
 
 ## 🏢 **ROOMS** (Salas)
 
 ### Endpoints Disponíveis
 
-| Método | Endpoint       | Descrição                 |
-| ------ | -------------- | ------------------------- |
-| GET    | `/rooms/`      | Listar todas as salas     |
-| POST   | `/rooms/`      | Criar nova sala           |
-| GET    | `/rooms/{id}/` | Buscar sala por ID        |
-| PUT    | `/rooms/{id}/` | Atualizar sala (completo) |
-| PATCH  | `/rooms/{id}/` | Atualizar sala (parcial)  |
-| DELETE | `/rooms/{id}/` | Deletar sala              |
+| Método | Endpoint                        | Descrição                 |
+| ------ | ------------------------------- | ------------------------- |
+| GET    | `/rooms/`                       | Listar todas as salas     |
+| POST   | `/rooms/`                       | Criar nova sala           |
+| POST   | `/rooms/get-or-create-default/` | **Obter dados padrão** ⭐ |
+| GET    | `/rooms/{id}/`                  | Buscar sala por ID        |
+| PUT    | `/rooms/{id}/`                  | Atualizar sala (completo) |
+| PATCH  | `/rooms/{id}/`                  | Atualizar sala (parcial)  |
+| DELETE | `/rooms/{id}/`                  | Deletar sala              |
 
 ### Ações Customizadas
 
@@ -178,6 +229,31 @@ Content-Type: application/json
   \"updated_at\": \"2025-11-18T15:32:25.123456Z\"
 }
 ```
+
+#### ⭐ **Obter Dados Padrão (Recomendado para Frontend)**
+
+```bash
+POST /api/rooms/get-or-create-default/
+```
+
+#### ✅ Resposta
+
+```json
+{
+  "created": false,
+  "room": {
+    "id": "7c5ca1c9-7492-42cd-af08-f5b0ee48bfb1",
+    "name": "Sala de Reunião B",
+    "capacity": 12,
+    "description": "Sala média para reuniões em grupo",
+    "location_id": "04f51fa5-e6b7-4b3d-9f22-663f0a79be80",
+    "created_at": "2025-11-18T20:05:59.797484Z",
+    "updated_at": "2025-11-18T20:05:59.797523Z"
+  }
+}
+```
+
+> **💡 Importante:** Este endpoint sempre retorna os mesmos dados padronizados. Use `created: false` para saber se os dados já existiam.
 
 ---
 
@@ -361,3 +437,66 @@ Configure as seguintes variáveis no Postman:
 ```
 
 **Todos os testes passaram com sucesso! ✨**
+
+---
+
+## 🎯 **INTEGRAÇÃO FRONTEND - Dados Padronizados**
+
+### ⚡ Fluxo Recomendado para Frontend
+
+Para evitar erros de duplicação e garantir dados consistentes, use os endpoints de dados padrão:
+
+```javascript
+// 1. Inicialização - garantir dados padrão
+const initializeDefaults = async () => {
+  // Location padrão
+  const locationRes = await fetch("/api/locations/get-or-create-default/", { method: "POST" });
+  const locationData = await locationRes.json();
+
+  const managerRes = await fetch("/api/managers/get-or-create-default/", { method: "POST" });
+  const managerData = await managerRes.json();
+
+  const roomRes = await fetch("/api/rooms/get-or-create-default/", { method: "POST" });
+  const roomData = await roomRes.json();
+
+  return {
+    locationId: locationData.location.id,
+    managerId: managerData.manager.id,
+    roomId: roomData.room.id,
+  };
+};
+
+// 2. Criar Booking com dados padrão
+const createBooking = async (startDate, endDate, purpose) => {
+  const { roomId, managerId } = await initializeDefaults();
+
+  const response = await fetch("/api/bookings/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      room: roomId,
+      manager: managerId,
+      start_datetime: startDate,
+      end_datetime: endDate,
+      purpose: purpose,
+    }),
+  });
+
+  return response.json();
+};
+```
+
+### ✅ Vantagens
+
+- **Sem erros de duplicação**: Sempre retorna dados válidos
+- **Consistência**: Mesmos dados em toda aplicação
+- **Performance**: Reutiliza dados existentes
+- **Simplicidade**: Frontend não precisa validar existência
+
+### 🚀 Status dos Endpoints Padrão
+
+- ✅ `POST /api/locations/get-or-create-default/`
+- ✅ `POST /api/managers/get-or-create-default/`
+- ✅ `POST /api/rooms/get-or-create-default/`
+
+**Resultado testado:** Todos sempre retornam `created: false` nas execuções subsequentes, confirmando reutilização de dados.
