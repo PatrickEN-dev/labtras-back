@@ -73,7 +73,7 @@ class BookingOutputDTO:
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON response"""
-        return {
+        result = {
             "id": self.booking.id,
             "room_id": self.booking.room_id,
             "manager_id": self.booking.manager_id,
@@ -95,3 +95,22 @@ class BookingOutputDTO:
                 self.booking.updated_at.isoformat() if self.booking.updated_at else None
             ),
         }
+
+        # Add room object if available
+        if hasattr(self.booking, "room") and self.booking.room:
+            result["room"] = {
+                "id": self.booking.room.id,
+                "name": self.booking.room.name,
+                "capacity": self.booking.room.capacity,
+                "location_id": self.booking.room.location_id,
+            }
+
+        # Add manager object if available
+        if hasattr(self.booking, "manager") and self.booking.manager:
+            result["manager"] = {
+                "id": self.booking.manager.id,
+                "name": self.booking.manager.name,
+                "email": self.booking.manager.email,
+            }
+
+        return result

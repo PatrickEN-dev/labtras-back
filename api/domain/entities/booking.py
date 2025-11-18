@@ -14,6 +14,8 @@ class Booking:
         id: str = None,
         room_id: str = None,
         manager_id: str = None,
+        room=None,
+        manager=None,
         name: str = None,
         description: Optional[str] = None,
         start_date: datetime = None,
@@ -28,6 +30,8 @@ class Booking:
         self.id = id or str(uuid.uuid4())
         self.room_id = room_id
         self.manager_id = manager_id
+        self.room = room
+        self.manager = manager
         self.name = name
         self.description = description
         self.start_date = start_date

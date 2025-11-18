@@ -21,6 +21,10 @@ class DjangoBookingRepository(BookingRepositoryInterface):
     def create(self, data: Dict[str, Any]) -> Booking:
         """Create a new booking"""
         booking_model = BookingModel.objects.create(**data)
+        # Reload with related data
+        booking_model = BookingModel.objects.select_related(
+            "room", "manager", "room__location"
+        ).get(id=booking_model.id)
         return self._model_to_entity(booking_model)
 
     def get_by_id(self, booking_id: str) -> Optional[Booking]:
@@ -227,12 +231,39 @@ class DjangoBookingRepository(BookingRepositoryInterface):
 
     def _model_to_entity(self, booking_model: BookingModel) -> Booking:
         """Convert Django model to domain entity"""
+        from ...domain.entities.room import Room
+        from ...domain.entities.manager import Manager
+
+        # Convert related objects to entities if they exist
+        room_entity = None
+        if hasattr(booking_model, "room") and booking_model.room:
+            room_entity = Room(
+                id=str(booking_model.room.id),
+                name=booking_model.room.name,
+                capacity=booking_model.room.capacity,
+                location_id=(
+                    str(booking_model.room.location_id)
+                    if booking_model.room.location_id
+                    else None
+                ),
+            )
+
+        manager_entity = None
+        if hasattr(booking_model, "manager") and booking_model.manager:
+            manager_entity = Manager(
+                id=str(booking_model.manager.id),
+                name=booking_model.manager.name,
+                email=booking_model.manager.email,
+            )
+
         return Booking(
             id=str(booking_model.id),
             room_id=str(booking_model.room_id) if booking_model.room_id else None,
             manager_id=(
                 str(booking_model.manager_id) if booking_model.manager_id else None
             ),
+            room=room_entity,
+            manager=manager_entity,
             name=booking_model.name,
             description=booking_model.description,
             start_date=booking_model.start_date,
