@@ -1,4 +1,4 @@
-# Seed de Dados - Labtras Backend
+# Seed de Dados - LabTrans Backend
 
 Este documento explica como usar o comando de seed para popular o banco de dados com dados iniciais.
 

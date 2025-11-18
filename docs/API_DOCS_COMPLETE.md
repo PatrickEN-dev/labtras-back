@@ -1,8 +1,8 @@
-# 🚀 LabTras API - Documentação Completa
+# 🚀 LabTrans API - Documentação Completa
 
 ## 📋 Visão Geral
 
-A **LabTras API** é um sistema completo para gerenciamento de laboratórios, salas, gestores e reservas. A API foi desenvolvida usando **Clean Architecture** com **Django REST Framework**.
+A **LabTrans API** é um sistema completo para gerenciamento de laboratórios, salas, gestores e reservas. A API foi desenvolvida usando **Clean Architecture** com **Django REST Framework**.
 
 ### 🎯 Funcionalidades
 
@@ -107,7 +107,7 @@ Content-Type: application/json
 
 {
   \"name\": \"João Silva\",
-  \"email\": \"joao@labtras.com\",
+  \"email\": \"joao@labtrans.com\",
   \"phone\": \"(11) 98765-4321\"
 }
 ```
@@ -118,7 +118,7 @@ Content-Type: application/json
 {
   \"id\": \"550e8400-e29b-41d4-a716-446655440001\",
   \"name\": \"João Silva\",
-  \"email\": \"joao@labtras.com\",
+  \"email\": \"joao@labtrans.com\",
   \"phone\": \"(11) 98765-4321\",
   \"created_at\": \"2025-11-18T15:32:25.123456Z\",
   \"updated_at\": \"2025-11-18T15:32:25.123456Z\"
@@ -268,7 +268,7 @@ GET /api/locations/?address=Flores
 ### Buscar Managers
 
 ```bash
-GET /api/managers/by_email/?email=joao@labtras.com
+GET /api/managers/by_email/?email=joao@labtrans.com
 GET /api/managers/search/?name=João
 ```
 

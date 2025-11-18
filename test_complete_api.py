@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Teste completo de todas as rotas da API LabTras
+Teste completo de todas as rotas da API LabTrans
 """
 import requests
 import json
@@ -122,7 +122,7 @@ class APITester:
         timestamp = datetime.now().strftime("%H%M%S")
         manager_data = {
             "name": "João Silva",
-            "email": f"joao{timestamp}@labtras.com",
+            "email": f"joao{timestamp}@labtrans.com",
             "phone": "(11) 98765-4321",
         }
         response = requests.post(f"{BASE_URL}/managers/", json=manager_data)
@@ -143,7 +143,7 @@ class APITester:
         # 3. Criar outro manager
         manager_data2 = {
             "name": "Maria Santos",
-            "email": f"maria{timestamp}@labtras.com",
+            "email": f"maria{timestamp}@labtrans.com",
         }
         response = requests.post(f"{BASE_URL}/managers/", json=manager_data2)
         if response.status_code == 201:
@@ -300,7 +300,7 @@ class APITester:
             )
 
     def run_all_tests(self):
-        print("🚀 Iniciando testes completos da API LabTras")
+        print("🚀 Iniciando testes completos da API LabTrans")
         print(f"Base URL: {BASE_URL}")
 
         try:

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "LabTras API - Complete",
-    "description": "API completa do sistema LabTras para gerenciamento de laboratórios, salas, gestores e reservas",
+    "name": "LabTrans API - Complete",
+    "description": "API completa do sistema LabTrans para gerenciamento de laboratórios, salas, gestores e reservas",,
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "2.0.0"
   },
@@ -141,7 +141,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@labtras.com\",\n  \"phone\": \"(11) 98765-4321\"\n}"
+              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao@labtrans.com\",\n  \"phone\": \"(11) 98765-4321\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/managers/",
@@ -205,13 +205,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/managers/by_email/?email=joao@labtras.com",
+              "raw": "{{base_url}}/api/managers/by_email/?email=joao@labtrans.com",
               "host": ["{{base_url}}"],
               "path": ["api", "managers", "by_email", ""],
               "query": [
                 {
                   "key": "email",
-                  "value": "joao@labtras.com"
+                  "value": "joao@labtrans.com"
                 }
               ]
             }
