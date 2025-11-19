@@ -98,4 +98,4 @@ python manage.py runserver 8080
 ---
 
 **📧 Contato:** [Patrick](https://github.com/PatrickEN-dev)  
-**🔗 Repositório:** [labtras-back](https://github.com/PatrickEN-dev/labtras-back)
+**🔗 Repositório:** [labtrans-back](https://github.com/PatrickEN-dev/labtras-back)
